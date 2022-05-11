@@ -8,13 +8,26 @@ contract Lottery{
     mapping (uint => address payable) public lotteryWinners;
     constructor(){
         owner = msg.sender;
-        lotteryId = 0;
+        lotteryId = 1;
     }
     modifier onlyOwner(){
         require(msg.sender==owner,"You are not the owner of this Smart Contract!!!");
         _;
     }
-    function joinLottery() public payable{
+    modifier joinOnlyOneTime(){
+        uint flag;
+        for(uint i=0; i<players.length; i++){
+            if(players[i]==msg.sender){
+                flag = 1;
+            }
+            else{
+                flag = 0;
+            }
+        }
+        require(flag==0,"You have already joined the lottery!!!");
+        _;
+    }
+    function joinLottery() public payable joinOnlyOneTime{
         require(msg.value > 2.9 ether,"You have to pay 3 Eth to join lottery!!!");
         players.push(payable(msg.sender));
     }
